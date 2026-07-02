@@ -2,11 +2,12 @@ package com.brochure.cms.dto;
 
 /**
  * Dimensions a configurable intake question can map to. Each criterion corresponds
- * to an existing therapist qualification used by the matching engine.
+ * to a product classification or shopper symptom used by the recommendation engine.
  */
 public enum IntakeCriterion {
-    FOCUS_AREA,
-    MODALITY,
-    DEMOGRAPHIC,
-    SERVICE_DELIVERY
+    ALLERGY_TYPE,
+    DIET_TYPE,
+    PRODUCT_CATEGORY,
+    SYMPTOM,
+    STORE_SECTION
 }

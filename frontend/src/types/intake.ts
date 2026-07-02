@@ -1,6 +1,11 @@
 export type IntakeQuestionType = "single" | "multi";
 
-export type IntakeCriterion = "FOCUS_AREA" | "MODALITY" | "DEMOGRAPHIC" | "SERVICE_DELIVERY";
+export type IntakeCriterion =
+  | "ALLERGY_TYPE"
+  | "DIET_TYPE"
+  | "PRODUCT_CATEGORY"
+  | "SYMPTOM"
+  | "STORE_SECTION";
 
 export interface IntakeOption {
   value: string;

@@ -14,25 +14,40 @@ import type {
 } from "@/types/intake";
 
 const CRITERIA: { value: IntakeCriterion; label: string }[] = [
-  { value: "FOCUS_AREA", label: "Focus area" },
-  { value: "MODALITY", label: "Modality" },
-  { value: "DEMOGRAPHIC", label: "Demographic" },
-  { value: "SERVICE_DELIVERY", label: "Service delivery" },
+  { value: "ALLERGY_TYPE", label: "Allergen to avoid" },
+  { value: "DIET_TYPE", label: "Diet type" },
+  { value: "PRODUCT_CATEGORY", label: "Product category" },
+  { value: "SYMPTOM", label: "Symptom" },
+  { value: "STORE_SECTION", label: "Store section" },
 ];
 
 const CRITERIA_TAXONOMY_TYPE: Record<
-  "FOCUS_AREA" | "MODALITY" | "DEMOGRAPHIC",
+  "ALLERGY_TYPE" | "DIET_TYPE" | "PRODUCT_CATEGORY",
   TaxonomyType
 > = {
-  FOCUS_AREA: "FOCUS_AREA",
-  MODALITY: "MODALITY",
-  DEMOGRAPHIC: "DEMOGRAPHIC",
+  ALLERGY_TYPE: "ALLERGY_TYPE",
+  DIET_TYPE: "DIET_TYPE",
+  PRODUCT_CATEGORY: "PRODUCT_CATEGORY",
 };
 
-const SERVICE_DELIVERY_OPTIONS: IntakeOption[] = [
-  { value: "VIRTUAL", label: "Virtual" },
-  { value: "IN_PERSON", label: "In-person" },
-  { value: "HYBRID", label: "No preference" },
+const SYMPTOM_OPTIONS: IntakeOption[] = [
+  { value: "bloating", label: "Bloating or gas" },
+  { value: "stomach-pain", label: "Stomach pain or cramps" },
+  { value: "diarrhea", label: "Diarrhea" },
+  { value: "skin-rash", label: "Skin rash or hives" },
+  { value: "itching", label: "Itching or tingling in mouth" },
+  { value: "headaches", label: "Headaches" },
+  { value: "fatigue", label: "Fatigue after eating" },
+  { value: "joint-pain", label: "Joint pain or swelling" },
+];
+
+const STORE_SECTION_OPTIONS: IntakeOption[] = [
+  { value: "PANTRY", label: "Pantry" },
+  { value: "BAKERY", label: "Bakery" },
+  { value: "REFRIGERATED", label: "Refrigerated" },
+  { value: "FROZEN", label: "Frozen" },
+  { value: "PRODUCE", label: "Produce" },
+  { value: "FRONT", label: "Front" },
 ];
 
 function generateId() {
@@ -47,40 +62,41 @@ function defaultQuestionnaire(terms: TaxonomyTerm[]): IntakeQuestionnaire {
       .map((t) => ({ value: t.id, label: t.label }));
 
   return {
-    title: "Find the right therapist",
-    description: "Answer a few anonymous questions and we’ll suggest therapists who may be a good fit.",
+    title: "Find safe, gluten-free & allergy-friendly foods",
+    description:
+      "Tell us what you avoid and how you feel after eating. We’ll suggest products that fit your needs and highlight symptoms worth discussing with a healthcare provider.",
     questions: [
       {
         id: generateId(),
-        label: "What brings you in?",
+        label: "Which allergens do you need to avoid?",
         type: "multi",
-        criterion: "FOCUS_AREA",
+        criterion: "ALLERGY_TYPE",
         required: false,
-        options: byType("FOCUS_AREA"),
+        options: byType("ALLERGY_TYPE"),
       },
       {
         id: generateId(),
-        label: "Are there any approaches you prefer?",
+        label: "Have you noticed any of these symptoms after eating?",
         type: "multi",
-        criterion: "MODALITY",
+        criterion: "SYMPTOM",
         required: false,
-        options: byType("MODALITY"),
+        options: SYMPTOM_OPTIONS,
       },
       {
         id: generateId(),
-        label: "Who is the support for?",
-        type: "single",
-        criterion: "DEMOGRAPHIC",
+        label: "Do you follow any of these diets?",
+        type: "multi",
+        criterion: "DIET_TYPE",
         required: false,
-        options: byType("DEMOGRAPHIC"),
+        options: byType("DIET_TYPE"),
       },
       {
         id: generateId(),
-        label: "How would you prefer to meet?",
-        type: "single",
-        criterion: "SERVICE_DELIVERY",
+        label: "What kinds of items are you looking for?",
+        type: "multi",
+        criterion: "PRODUCT_CATEGORY",
         required: false,
-        options: SERVICE_DELIVERY_OPTIONS,
+        options: byType("PRODUCT_CATEGORY"),
       },
     ],
   };
@@ -90,7 +106,8 @@ function optionsForCriterion(
   criterion: IntakeCriterion,
   terms: TaxonomyTerm[],
 ): IntakeOption[] {
-  if (criterion === "SERVICE_DELIVERY") return SERVICE_DELIVERY_OPTIONS;
+  if (criterion === "SYMPTOM") return SYMPTOM_OPTIONS;
+  if (criterion === "STORE_SECTION") return STORE_SECTION_OPTIONS;
   const type = CRITERIA_TAXONOMY_TYPE[criterion];
   return terms
     .filter((t) => t.type === type)
@@ -110,7 +127,7 @@ export default function AdminIntakePage() {
     Promise.all([
       fetchAdminSettings(),
       Promise.all(
-        (["FOCUS_AREA", "MODALITY", "DEMOGRAPHIC"] as TaxonomyType[]).map((type) =>
+        (["ALLERGY_TYPE", "DIET_TYPE", "PRODUCT_CATEGORY"] as TaxonomyType[]).map((type) =>
           fetchAdminTaxonomies(type),
         ),
       ),
@@ -166,9 +183,9 @@ export default function AdminIntakePage() {
             id: generateId(),
             label: "New question",
             type: "single",
-            criterion: "FOCUS_AREA",
+            criterion: "ALLERGY_TYPE",
             required: false,
-            options: optionsForCriterion("FOCUS_AREA", terms),
+            options: optionsForCriterion("ALLERGY_TYPE", terms),
           },
         ],
       };

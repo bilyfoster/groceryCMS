@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import {
-  backfillStaffTherapists,
   createStaffMember,
   deleteStaffMember,
   fetchAdminStaff,
@@ -61,7 +60,6 @@ export default function AdminStaffPage() {
           email: editing.email || undefined,
           sortOrder: editing.sortOrder,
           published: editing.published,
-          isTherapist: editing.isTherapist,
         });
       } else {
         await createStaffMember({
@@ -73,7 +71,6 @@ export default function AdminStaffPage() {
           email: editing.email || undefined,
           sortOrder: editing.sortOrder ?? 0,
           published: editing.published ?? true,
-          isTherapist: editing.isTherapist ?? false,
         });
       }
       setEditing(null);
@@ -95,47 +92,26 @@ export default function AdminStaffPage() {
     }
   };
 
-  const handleBackfill = async () => {
-    if (!confirm("Create therapist profiles for all licensed clinicians in this staff list?")) return;
-    setLoading(true);
-    try {
-      const created = await backfillStaffTherapists();
-      alert(`${created} therapist profile(s) created.`);
-      const updated = await fetchAdminStaff(selectedPageId);
-      setMembers(updated);
-    } catch {
-      alert("Failed to backfill therapists");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Staff</h1>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={handleBackfill}>
-            Import licensed clinicians to therapists
-          </Button>
-          <Button
-            onClick={() =>
-              setEditing({
-                pageId: selectedPageId,
-                name: "",
-                title: "",
-                bio: "",
-                photoUrl: "",
-                email: "",
-                sortOrder: members.length,
-                published: true,
-                isTherapist: false,
-              })
-            }
-          >
-            Add staff member
-          </Button>
-        </div>
+        <Button
+          onClick={() =>
+            setEditing({
+              pageId: selectedPageId,
+              name: "",
+              title: "",
+              bio: "",
+              photoUrl: "",
+              email: "",
+              sortOrder: members.length,
+              published: true,
+            })
+          }
+        >
+          Add staff member
+        </Button>
       </div>
 
       <div className="mb-6">
@@ -210,15 +186,6 @@ export default function AdminStaffPage() {
               />
               <Label htmlFor="published">Published</Label>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="isTherapist"
-                type="checkbox"
-                checked={editing.isTherapist ?? false}
-                onChange={(e) => setEditing({ ...editing, isTherapist: e.target.checked })}
-              />
-              <Label htmlFor="isTherapist">Also list as therapist</Label>
-            </div>
             <div className="sm:col-span-2">
               <Label htmlFor="bio">Bio</Label>
               <Textarea
@@ -255,9 +222,7 @@ export default function AdminStaffPage() {
                   {!m.published && (
                     <span className="ml-2 text-xs text-slate-500">(draft)</span>
                   )}
-                  {m.isTherapist && (
-                    <span className="ml-2 text-xs text-blue-600">(therapist)</span>
-                  )}
+
                 </p>
                 {m.title && <p className="text-sm text-slate-600">{m.title}</p>}
                 {m.bio && <p className="mt-1 line-clamp-2 text-sm text-slate-600">{m.bio}</p>}

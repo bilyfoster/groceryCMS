@@ -31,8 +31,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: { default: "BrochureCMS", template: "%s | BrochureCMS" },
-  description: "Multi-tenant brochure CMS",
+  title: { default: "Pickles Bodega", template: "%s | Pickles Bodega" },
+  description: "Gluten-free and allergy-friendly groceries in Flagstaff, Arizona.",
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",

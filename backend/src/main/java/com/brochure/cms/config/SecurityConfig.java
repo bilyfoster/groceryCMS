@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/pages/**", "/api/blog/**", "/api/faq/**",
                                 "/api/staff/**", "/api/gallery/**", "/api/taxonomies/**",
-                                "/api/therapists/**")
+                                "/api/products/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/contact", "/api/blog/*/comments", "/api/match", "/api/events")
                         .permitAll()

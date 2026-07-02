@@ -1,23 +1,22 @@
-import type { AvailabilityStatus, ServiceDelivery } from "./therapist";
+import type { StockStatus } from "./product";
 
 export interface IntakeRequest {
-  areasOfConcern?: string[];
-  preferredModalities?: string[];
-  clientDemographic?: string;
-  preferredDelivery?: ServiceDelivery;
+  avoidedAllergies?: string[];
+  preferredDiets?: string[];
+  preferredCategories?: string[];
+  symptoms?: string[];
   contactEmail?: string;
-  therapistGenderPreference?: string;
-  therapistIdentityPreference?: string;
 }
 
 export interface MatchResult {
-  therapistId: string;
+  productId: string;
   slug: string;
-  firstName: string;
-  lastName: string;
-  credentials: string | null;
+  name: string;
+  brand: string | null;
+  price: number | null;
+  unit: string | null;
   photoUrl: string | null;
-  availabilityStatus: AvailabilityStatus;
+  stockStatus: StockStatus;
   score: number;
   rank: number;
   explanations: string[];
@@ -25,4 +24,5 @@ export interface MatchResult {
 
 export interface MatchResponse {
   matches: MatchResult[];
+  awarenessNotes: string[];
 }

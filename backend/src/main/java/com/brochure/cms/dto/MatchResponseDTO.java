@@ -7,7 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Wrapper for the list of ranked therapist matches produced by the matching engine.
+ * Wrapper for the list of ranked product recommendations produced by the
+ * recommendation engine, plus an optional allergy-awareness note.
  */
 @Data
 @Builder
@@ -16,4 +17,5 @@ import lombok.NoArgsConstructor;
 public class MatchResponseDTO {
 
     private List<MatchResultDTO> matches;
+    private List<String> awarenessNotes;
 }

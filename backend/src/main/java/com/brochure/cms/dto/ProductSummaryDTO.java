@@ -10,23 +10,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * A single ranked product recommendation returned by the recommendation engine.
+ * Public directory card payload for a grocery product.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MatchResultDTO {
+public class ProductSummaryDTO {
 
-    private UUID productId;
-    private String slug;
+    private UUID id;
     private String name;
+    private String slug;
     private String brand;
     private BigDecimal price;
     private String unit;
     private String photoUrl;
     private StockStatus stockStatus;
-    private double score;
-    private int rank;
-    private List<String> explanations;
+    private List<TaxonomyTermResponseDTO> allergyTypes;
+    private List<TaxonomyTermResponseDTO> dietTypes;
+    private List<TaxonomyTermResponseDTO> categories;
+    private int sortOrder;
 }

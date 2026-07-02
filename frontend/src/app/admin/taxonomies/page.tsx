@@ -15,9 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 const TYPES: { value: TaxonomyType; label: string }[] = [
-  { value: "FOCUS_AREA", label: "Focus areas" },
-  { value: "MODALITY", label: "Modalities" },
-  { value: "DEMOGRAPHIC", label: "Demographics" },
+  { value: "ALLERGY_TYPE", label: "Allergens (free-of claims)" },
+  { value: "DIET_TYPE", label: "Diet types" },
+  { value: "PRODUCT_CATEGORY", label: "Product categories" },
 ];
 
 function slugify(value: string): string {
@@ -34,7 +34,7 @@ interface EditingTerm extends Partial<TaxonomyTermRequest> {
 
 export default function AdminTaxonomiesPage() {
   const [role, setRole] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<TaxonomyType>("FOCUS_AREA");
+  const [selectedType, setSelectedType] = useState<TaxonomyType>("ALLERGY_TYPE");
   const [terms, setTerms] = useState<TaxonomyTerm[]>([]);
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState<EditingTerm | null>(null);

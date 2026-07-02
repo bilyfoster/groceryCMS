@@ -1,22 +1,24 @@
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
 import type { PageTypeProps } from "@/components/page-types";
-import { fetchTaxonomies, fetchTherapists } from "@/lib/api";
+import { fetchProducts, fetchTaxonomies } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  AVAILABILITY_BADGE_COLORS,
-  AVAILABILITY_LABELS,
-} from "@/types/therapist";
+  STOCK_STATUS_BADGE_COLORS,
+  STOCK_STATUS_LABELS,
+  formatPrice,
+} from "@/types/product";
 
 export async function ServicePage({ page }: PageTypeProps) {
   const layout = page.layout || "contained";
-  const focusAreaId = page.config?.focusAreaId as string | undefined;
+  const categoryId = page.config?.categoryId as string | undefined;
 
-  const related = focusAreaId
-    ? (await fetchTherapists({ focusArea: focusAreaId }, 0, 6)).items
+  const related = categoryId
+    ? (await fetchProducts({ category: categoryId }, 0, 6)).items
     : [];
-  const focusArea = focusAreaId
-    ? (await fetchTaxonomies("FOCUS_AREA")).find((t) => t.id === focusAreaId)
+  const category = categoryId
+    ? (await fetchTaxonomies("PRODUCT_CATEGORY")).find((t) => t.id === categoryId)
     : null;
 
   const wrapperClass = cn(
@@ -41,31 +43,44 @@ export async function ServicePage({ page }: PageTypeProps) {
         {related.length > 0 && (
           <section className="mt-12">
             <h2 className="mb-4 text-2xl font-bold">
-              Therapists {focusArea ? `specializing in ${focusArea.label}` : "for this service"}
+              Products {category ? `in ${category.label}` : "for this service"}
             </h2>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((therapist) => (
+              {related.map((product) => (
                 <li
-                  key={therapist.id}
+                  key={product.id}
                   className="rounded-[var(--border-radius)] border border-slate-200 bg-white p-4"
                 >
+                  {product.photoUrl && (
+                    <Image
+                      src={product.photoUrl}
+                      alt={product.name}
+                      width={80}
+                      height={80}
+                      unoptimized
+                      className="mb-3 h-20 w-20 rounded-[var(--border-radius)] object-cover"
+                    />
+                  )}
                   <Link
-                    href={`/therapists/${therapist.slug}`}
+                    href={`/products/${product.slug}`}
                     className="text-lg font-semibold hover:underline"
                   >
-                    {therapist.firstName} {therapist.lastName}
+                    {product.name}
                   </Link>
-                  {therapist.credentials && (
-                    <p className="text-sm text-slate-600">{therapist.credentials}</p>
+                  {product.brand && (
+                    <p className="text-sm text-slate-600">{product.brand}</p>
                   )}
+                  <p className="text-sm font-medium text-slate-800">
+                    {formatPrice(product.price, product.unit)}
+                  </p>
                   <span
-                    className={`mt-2 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${AVAILABILITY_BADGE_COLORS[therapist.availabilityStatus]}`}
+                    className={`mt-2 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STOCK_STATUS_BADGE_COLORS[product.stockStatus]}`}
                   >
-                    {AVAILABILITY_LABELS[therapist.availabilityStatus]}
+                    {STOCK_STATUS_LABELS[product.stockStatus]}
                   </span>
-                  {therapist.focusAreas.length > 0 && (
+                  {product.allergyTypes.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1">
-                      {therapist.focusAreas.slice(0, 3).map((term) => (
+                      {product.allergyTypes.slice(0, 3).map((term) => (
                         <span
                           key={term.id}
                           className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-800"
@@ -80,10 +95,10 @@ export async function ServicePage({ page }: PageTypeProps) {
             </ul>
             <div className="mt-4">
               <Link
-                href={`/therapists?focusArea=${focusAreaId}`}
+                href={`/products?category=${categoryId}`}
                 className="text-[var(--color-primary)] hover:underline"
               >
-                View all matching therapists →
+                View all matching products →
               </Link>
             </div>
           </section>

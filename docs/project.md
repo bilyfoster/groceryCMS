@@ -2,7 +2,7 @@
 
 ## Project Name
 
-Brazen Therapy Website & Therapist Matching Platform
+Pickles Bodega Gluten-Free & Allergy-Friendly Grocery CMS
 
 ## Version
 
@@ -10,16 +10,16 @@ Brazen Therapy Website & Therapist Matching Platform
 
 ## Overview
 
-Brazen Therapy requires a modern website and content management platform to replace its current Wix-based website.
+Pickles Bodega requires a modern website and content management platform for its gluten-free and allergy-friendly grocery store in Flagstaff, Arizona.
 
 The new platform will serve two primary functions:
 
 1. Public-facing marketing website
-2. Therapist discovery and matching system
+2. Product catalog with allergy/diet filtering and an allergy-awareness intake tool
 
-The platform will not store Protected Health Information (PHI), provide clinical records management, or handle appointment scheduling. Appointment scheduling will continue to be managed by a third-party platform.
+The platform will not provide medical diagnosis or store Protected Health Information (PHI). The intake tool is informational only and encourages shoppers to discuss symptoms with a healthcare provider.
 
-The goal is to improve the client experience by helping prospective clients identify the most appropriate therapist based on their needs while providing Brazen Therapy staff with a centralized content and therapist management system.
+The goal is to improve the shopping experience by helping customers find products that fit their dietary restrictions and possible allergy concerns, while providing Pickles Bodega staff with a centralized content and product management system.
 
 ---
 

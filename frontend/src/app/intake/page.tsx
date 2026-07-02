@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import { fetchIntakeQuestionnaire, submitIntakeMatch } from "@/lib/api";
 import { trackEvent } from "@/lib/analytics";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
-import { TherapistMatchList } from "@/components/TherapistMatchList";
+import { ProductRecommendationList } from "@/components/ProductRecommendationList";
 import { Button } from "@/components/ui/button";
 import type { IntakeAnswers, IntakeQuestion, IntakeQuestionnaire } from "@/types/intake";
-import type { MatchResult } from "@/types/match";
+import type { MatchResponse } from "@/types/match";
 
 export default function IntakePage() {
   const [questionnaire, setQuestionnaire] = useState<IntakeQuestionnaire | null>(null);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<IntakeAnswers>({});
-  const [results, setResults] = useState<MatchResult[] | null>(null);
+  const [results, setResults] = useState<MatchResponse | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -44,10 +44,10 @@ export default function IntakePage() {
     setSubmitting(true);
     try {
       const response = await submitIntakeMatch({ answers });
-      setResults(response.matches);
+      setResults(response);
       trackEvent("intake_complete", { matchCount: response.matches.length });
     } catch {
-      alert("Failed to get matches. Please try again.");
+      alert("Failed to get recommendations. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -78,7 +78,11 @@ export default function IntakePage() {
   if (results) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8 md:py-12">
-        <TherapistMatchList matches={results} onReset={handleReset} />
+        <ProductRecommendationList
+          matches={results.matches}
+          awarenessNotes={results.awarenessNotes}
+          onReset={handleReset}
+        />
       </main>
     );
   }
@@ -138,7 +142,7 @@ export default function IntakePage() {
 
         <div className="flex justify-end">
           <Button onClick={handleSubmit} disabled={submitting}>
-            {submitting ? "Matching…" : "See my matches"}
+            {submitting ? "Finding recommendations…" : "See my recommendations"}
           </Button>
         </div>
       </div>

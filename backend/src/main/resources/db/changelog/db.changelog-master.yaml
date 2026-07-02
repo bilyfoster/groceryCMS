@@ -63,3 +63,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/changes/031-google-tracking.sql
   - include:
       file: classpath:/db/changelog/changes/032-ga-off-until-prod.sql
+  - include:
+      file: classpath:/db/changelog/changes/033-products.sql

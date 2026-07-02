@@ -42,14 +42,14 @@ export default function EditPagePage() {
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [pagePassword, setPagePassword] = useState("");
-  const [focusAreaId, setFocusAreaId] = useState<string>("");
+  const [categoryId, setCategoryId] = useState<string>("");
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const { data: focusAreas = [] } = useQuery<TaxonomyTerm[]>({
-    queryKey: ["admin-focus-areas"],
-    queryFn: () => fetchAdminTaxonomies("FOCUS_AREA"),
+  const { data: categories = [] } = useQuery<TaxonomyTerm[]>({
+    queryKey: ["admin-product-categories"],
+    queryFn: () => fetchAdminTaxonomies("PRODUCT_CATEGORY"),
     enabled: page?.pageType === "service",
   });
 
@@ -60,7 +60,7 @@ export default function EditPagePage() {
       setNavOrder(page.navOrder != null ? String(page.navOrder) : "");
       setMetaTitle(page.metaTitle ?? "");
       setMetaDescription(page.metaDescription ?? "");
-      setFocusAreaId((page.config?.focusAreaId as string) ?? "");
+      setCategoryId((page.config?.categoryId as string) ?? "");
       setBlocks(page.blocks);
     }
   }, [page]);
@@ -73,7 +73,7 @@ export default function EditPagePage() {
         navOrder: navOrder === "" ? null : Number(navOrder),
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
-        config: page?.pageType === "service" ? { focusAreaId: focusAreaId || null } : {},
+        config: page?.pageType === "service" ? { categoryId: categoryId || null } : {},
         ...(pagePassword ? { pagePassword } : {}),
       });
       for (const block of blocks) {
@@ -225,22 +225,22 @@ export default function EditPagePage() {
         </div>
         {page.pageType === "service" && (
           <div>
-            <Label htmlFor="focusArea">Related focus area</Label>
+            <Label htmlFor="category">Related product category</Label>
             <select
-              id="focusArea"
-              value={focusAreaId}
-              onChange={(e) => setFocusAreaId(e.target.value)}
+              id="category"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
               className="w-full rounded-[var(--border-radius)] border border-slate-200 bg-white px-3 py-2 text-sm"
             >
               <option value="">None</option>
-              {focusAreas.map((term) => (
+              {categories.map((term) => (
                 <option key={term.id} value={term.id}>
                   {term.label}
                 </option>
               ))}
             </select>
             <p className="mt-1 text-xs text-slate-500">
-              Related therapists with this focus area will appear on the service page.
+              Related products in this category will appear on the service page.
             </p>
           </div>
         )}

@@ -1,4 +1,4 @@
-export type TaxonomyType = "FOCUS_AREA" | "MODALITY" | "DEMOGRAPHIC";
+export type TaxonomyType = "ALLERGY_TYPE" | "DIET_TYPE" | "PRODUCT_CATEGORY";
 
 export interface TaxonomyTerm {
   id: string;
@@ -15,6 +15,6 @@ export interface TaxonomyTermRequest {
   label: string;
   slug: string;
   description?: string;
-  sortOrder: number;
+  sortOrder?: number;
   active?: boolean;
 }

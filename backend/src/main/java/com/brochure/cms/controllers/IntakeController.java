@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Public intake questionnaire and anonymous matching endpoint.
+ * Public allergy-awareness intake questionnaire and anonymous product recommendation endpoint.
  */
 @RestController
 @RequestMapping("/api/intake")

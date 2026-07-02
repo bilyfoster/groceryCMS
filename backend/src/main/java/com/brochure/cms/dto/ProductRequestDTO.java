@@ -1,14 +1,16 @@
 package com.brochure.cms.dto;
 
-import com.brochure.cms.enums.AvailabilityStatus;
-import com.brochure.cms.enums.ServiceDelivery;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import com.brochure.cms.enums.StockStatus;
+import com.brochure.cms.enums.StoreSection;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -17,65 +19,48 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Admin create/update payload for a therapist profile.
+ * Admin create/update payload for a grocery product.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TherapistRequestDTO {
+public class ProductRequestDTO {
 
     public static final String SLUG_PATTERN = "^[a-z0-9]+(?:-[a-z0-9]+)*$";
     public static final String SLUG_MESSAGE = "slug must be lowercase alphanumeric words separated by hyphens";
 
-    private UUID userId;
-
     @NotBlank
     @Size(max = 255)
-    private String firstName;
-
-    @NotBlank
-    @Size(max = 255)
-    private String lastName;
-
-    @Size(max = 500)
-    private String credentials;
-
-    @Size(max = 100)
-    private String pronouns;
-
-    @Size(max = 2000)
-    private String photoUrl;
+    private String name;
 
     @NotBlank
     @Size(max = 255)
     @Pattern(regexp = SLUG_PATTERN, message = SLUG_MESSAGE)
     private String slug;
 
+    @Size(max = 255)
+    private String brand;
+
     @Size(max = 10000)
-    private String bio;
+    private String description;
 
-    @Min(0)
-    @Max(100)
-    private Integer yearsOfExperience;
+    @DecimalMin(value = "0.00", inclusive = true)
+    @DecimalMax(value = "999999.99", inclusive = true)
+    @Digits(integer = 6, fraction = 2)
+    private BigDecimal price;
 
-    @Size(max = 2000)
-    private String education;
-
-    @Size(max = 500)
-    private String licensure;
-
-    @NotNull
-    private ServiceDelivery serviceDelivery;
-
-    @NotNull
-    private AvailabilityStatus availabilityStatus;
+    @Size(max = 50)
+    private String unit;
 
     @Size(max = 2000)
-    private String schedulingUrl;
+    private String photoUrl;
 
-    @Size(max = 100)
-    private String bookingPlatformRef;
+    @NotNull
+    private StockStatus stockStatus;
+
+    @NotNull
+    private StoreSection storeSection;
 
     @Size(max = 500)
     private String metaTitle;

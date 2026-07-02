@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Public matching endpoint. Clients submit intake preferences and receive a ranked,
- * explainable list of therapists. Protected by hCaptcha when configured.
+ * Public matching endpoint. Shoppers submit intake preferences and receive a ranked,
+ * explainable list of grocery product recommendations. Protected by hCaptcha when configured.
  */
 @RestController
 @RequestMapping("/api/match")
@@ -32,7 +32,7 @@ public class MatchingController {
     }
 
     @PostMapping
-    @Operation(summary = "Submit intake preferences and receive ranked therapist matches")
+    @Operation(summary = "Submit intake preferences and receive ranked product recommendations")
     public ApiResponse<MatchResponseDTO> match(
             @Valid @RequestBody IntakeRequestDTO request,
             @RequestParam(value = "captchaToken", required = false) String captchaToken) {

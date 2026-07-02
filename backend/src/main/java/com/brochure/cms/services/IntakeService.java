@@ -4,7 +4,6 @@ import com.brochure.cms.dto.IntakeCriterion;
 import com.brochure.cms.dto.IntakeQuestionnaireDTO;
 import com.brochure.cms.dto.IntakeRequestDTO;
 import com.brochure.cms.dto.MatchResponseDTO;
-import com.brochure.cms.enums.ServiceDelivery;
 import com.brochure.cms.models.TaxonomyTerm;
 import com.brochure.cms.repositories.TaxonomyTermRepository;
 import com.brochure.cms.domain.tenant.Tenant;
@@ -24,11 +23,24 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Configurable allergy-awareness intake questionnaire and product recommendation.
+ */
 @Service
 @Transactional(readOnly = true)
 public class IntakeService {
 
     private static final String SETTINGS_KEY = "intakeQuestionnaire";
+
+    private static final Map<String, String> SYMPTOM_OPTIONS = Map.ofEntries(
+            Map.entry("bloating", "Bloating or gas"),
+            Map.entry("stomach-pain", "Stomach pain or cramps"),
+            Map.entry("diarrhea", "Diarrhea"),
+            Map.entry("skin-rash", "Skin rash or hives"),
+            Map.entry("itching", "Itching or tingling in mouth"),
+            Map.entry("headaches", "Headaches"),
+            Map.entry("fatigue", "Fatigue after eating"),
+            Map.entry("joint-pain", "Joint pain or swelling"));
 
     private final TenantRepository tenantRepository;
     private final TaxonomyTermRepository taxonomyTermRepository;
@@ -67,10 +79,10 @@ public class IntakeService {
 
     private IntakeRequestDTO translateAnswers(Map<String, List<String>> answers,
                                                IntakeQuestionnaireDTO.Questionnaire questionnaire) {
-        Set<UUID> focusAreaIds = new HashSet<>();
-        Set<UUID> modalityIds = new HashSet<>();
-        UUID demographicId = null;
-        ServiceDelivery delivery = null;
+        Set<UUID> avoidedAllergyIds = new HashSet<>();
+        Set<UUID> dietIds = new HashSet<>();
+        Set<UUID> categoryIds = new HashSet<>();
+        Set<String> symptoms = new HashSet<>();
 
         Map<String, IntakeQuestionnaireDTO.Question> questionById = questionnaire.questions().stream()
                 .collect(Collectors.toMap(IntakeQuestionnaireDTO.Question::id, q -> q));
@@ -86,10 +98,13 @@ public class IntakeService {
             }
             try {
                 switch (question.criterion()) {
-                    case FOCUS_AREA -> focusAreaIds.addAll(parseUuids(values));
-                    case MODALITY -> modalityIds.addAll(parseUuids(values));
-                    case DEMOGRAPHIC -> demographicId = parseUuid(values.get(0)).orElse(null);
-                    case SERVICE_DELIVERY -> delivery = ServiceDelivery.valueOf(values.get(0));
+                    case ALLERGY_TYPE -> avoidedAllergyIds.addAll(parseUuids(values));
+                    case DIET_TYPE -> dietIds.addAll(parseUuids(values));
+                    case PRODUCT_CATEGORY -> categoryIds.addAll(parseUuids(values));
+                    case SYMPTOM -> symptoms.addAll(values);
+                    case STORE_SECTION -> {
+                        // Store section is not used for product matching; ignored here.
+                    }
                 }
             } catch (IllegalArgumentException ignored) {
                 // Skip malformed answers.
@@ -97,66 +112,69 @@ public class IntakeService {
         }
 
         return IntakeRequestDTO.builder()
-                .areasOfConcern(focusAreaIds.isEmpty() ? null : focusAreaIds)
-                .preferredModalities(modalityIds.isEmpty() ? null : modalityIds)
-                .clientDemographic(demographicId)
-                .preferredDelivery(delivery)
+                .avoidedAllergies(avoidedAllergyIds.isEmpty() ? null : avoidedAllergyIds)
+                .preferredDiets(dietIds.isEmpty() ? null : dietIds)
+                .preferredCategories(categoryIds.isEmpty() ? null : categoryIds)
+                .symptoms(symptoms.isEmpty() ? null : symptoms)
                 .build();
     }
 
     private IntakeQuestionnaireDTO.Questionnaire defaultQuestionnaire(UUID tenantId) {
-        List<TaxonomyTerm> focusAreas = activeTerms(tenantId, com.brochure.cms.enums.TaxonomyType.FOCUS_AREA);
-        List<TaxonomyTerm> modalities = activeTerms(tenantId, com.brochure.cms.enums.TaxonomyType.MODALITY);
-        List<TaxonomyTerm> demographics = activeTerms(tenantId, com.brochure.cms.enums.TaxonomyType.DEMOGRAPHIC);
+        List<TaxonomyTerm> allergies = activeTerms(tenantId, com.brochure.cms.enums.TaxonomyType.ALLERGY_TYPE);
+        List<TaxonomyTerm> diets = activeTerms(tenantId, com.brochure.cms.enums.TaxonomyType.DIET_TYPE);
+        List<TaxonomyTerm> categories = activeTerms(tenantId, com.brochure.cms.enums.TaxonomyType.PRODUCT_CATEGORY);
 
         List<IntakeQuestionnaireDTO.Question> questions = new ArrayList<>();
-        if (!focusAreas.isEmpty()) {
+
+        if (!allergies.isEmpty()) {
             questions.add(new IntakeQuestionnaireDTO.Question(
-                    "focus_areas",
-                    "What brings you in?",
+                    "avoided_allergies",
+                    "Which allergens do you need to avoid?",
                     "multi",
-                    IntakeCriterion.FOCUS_AREA,
+                    IntakeCriterion.ALLERGY_TYPE,
                     false,
-                    focusAreas.stream()
+                    allergies.stream()
                             .map(t -> new IntakeQuestionnaireDTO.Option(t.getId().toString(), t.getLabel()))
                             .toList()));
         }
-        if (!modalities.isEmpty()) {
-            questions.add(new IntakeQuestionnaireDTO.Question(
-                    "modalities",
-                    "Are there any approaches you prefer?",
-                    "multi",
-                    IntakeCriterion.MODALITY,
-                    false,
-                    modalities.stream()
-                            .map(t -> new IntakeQuestionnaireDTO.Option(t.getId().toString(), t.getLabel()))
-                            .toList()));
-        }
-        if (!demographics.isEmpty()) {
-            questions.add(new IntakeQuestionnaireDTO.Question(
-                    "demographic",
-                    "Who is the support for?",
-                    "single",
-                    IntakeCriterion.DEMOGRAPHIC,
-                    false,
-                    demographics.stream()
-                            .map(t -> new IntakeQuestionnaireDTO.Option(t.getId().toString(), t.getLabel()))
-                            .toList()));
-        }
+
         questions.add(new IntakeQuestionnaireDTO.Question(
-                "delivery",
-                "How would you prefer to meet?",
-                "single",
-                IntakeCriterion.SERVICE_DELIVERY,
+                "symptoms",
+                "Have you noticed any of these symptoms after eating?",
+                "multi",
+                IntakeCriterion.SYMPTOM,
                 false,
-                List.of(
-                        new IntakeQuestionnaireDTO.Option("VIRTUAL", "Virtual"),
-                        new IntakeQuestionnaireDTO.Option("IN_PERSON", "In-person"),
-                        new IntakeQuestionnaireDTO.Option("HYBRID", "No preference"))));
+                SYMPTOM_OPTIONS.entrySet().stream()
+                        .map(e -> new IntakeQuestionnaireDTO.Option(e.getKey(), e.getValue()))
+                        .toList()));
+
+        if (!diets.isEmpty()) {
+            questions.add(new IntakeQuestionnaireDTO.Question(
+                    "preferred_diets",
+                    "Do you follow any of these diets?",
+                    "multi",
+                    IntakeCriterion.DIET_TYPE,
+                    false,
+                    diets.stream()
+                            .map(t -> new IntakeQuestionnaireDTO.Option(t.getId().toString(), t.getLabel()))
+                            .toList()));
+        }
+
+        if (!categories.isEmpty()) {
+            questions.add(new IntakeQuestionnaireDTO.Question(
+                    "preferred_categories",
+                    "What kinds of items are you looking for?",
+                    "multi",
+                    IntakeCriterion.PRODUCT_CATEGORY,
+                    false,
+                    categories.stream()
+                            .map(t -> new IntakeQuestionnaireDTO.Option(t.getId().toString(), t.getLabel()))
+                            .toList()));
+        }
 
         return new IntakeQuestionnaireDTO.Questionnaire(
-                "Find the right therapist",
-                "Answer a few anonymous questions and we’ll suggest therapists who may be a good fit.",
+                "Find safe, gluten-free & allergy-friendly foods",
+                "Tell us what you avoid and how you feel after eating. We’ll suggest products that fit your needs and highlight symptoms worth discussing with a healthcare provider.",
                 questions);
     }
 

@@ -53,9 +53,9 @@ class TaxonomyServiceImplTest {
 
     private TaxonomyTermRequestDTO request() {
         return TaxonomyTermRequestDTO.builder()
-                .type(TaxonomyType.FOCUS_AREA)
-                .label("Anxiety")
-                .slug("anxiety")
+                .type(TaxonomyType.ALLERGY_TYPE)
+                .label("Gluten-Free")
+                .slug("gluten-free")
                 .sortOrder(0)
                 .build();
     }
@@ -63,7 +63,7 @@ class TaxonomyServiceImplTest {
     @Test
     void create_When_SlugIsUnique_Expect_TermSavedWithTenantAndActiveDefault() {
         when(repository.existsByTenantIdAndTypeAndSlugAndDeletedAtIsNull(
-                        TENANT_ID, TaxonomyType.FOCUS_AREA, "anxiety"))
+                        TENANT_ID, TaxonomyType.ALLERGY_TYPE, "gluten-free"))
                 .thenReturn(false);
         when(repository.save(any(TaxonomyTerm.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -73,15 +73,15 @@ class TaxonomyServiceImplTest {
         verify(repository).save(captor.capture());
         TaxonomyTerm saved = captor.getValue();
         assertEquals(TENANT_ID, saved.getTenantId());
-        assertEquals("anxiety", saved.getSlug());
+        assertEquals("gluten-free", saved.getSlug());
         assertTrue(saved.isActive(), "active should default to true when omitted");
-        assertEquals("Anxiety", result.getLabel());
+        assertEquals("Gluten-Free", result.getLabel());
     }
 
     @Test
     void create_When_SlugAlreadyExists_Expect_ValidationExceptionAndNoSave() {
         when(repository.existsByTenantIdAndTypeAndSlugAndDeletedAtIsNull(
-                        TENANT_ID, TaxonomyType.FOCUS_AREA, "anxiety"))
+                        TENANT_ID, TaxonomyType.ALLERGY_TYPE, "gluten-free"))
                 .thenReturn(true);
 
         assertThrows(ValidationException.class, () -> service.create(request()));
@@ -102,9 +102,9 @@ class TaxonomyServiceImplTest {
         UUID id = UUID.randomUUID();
         TaxonomyTerm term = TaxonomyTerm.builder()
                 .tenantId(TENANT_ID)
-                .type(TaxonomyType.FOCUS_AREA)
-                .label("Anxiety")
-                .slug("anxiety")
+                .type(TaxonomyType.ALLERGY_TYPE)
+                .label("Gluten-Free")
+                .slug("gluten-free")
                 .active(true)
                 .build();
         when(repository.findByIdAndTenantIdAndDeletedAtIsNull(id, TENANT_ID))
@@ -121,18 +121,18 @@ class TaxonomyServiceImplTest {
     void listActive_When_TermsExist_Expect_MappedDtosInRepositoryOrder() {
         TaxonomyTerm term = TaxonomyTerm.builder()
                 .tenantId(TENANT_ID)
-                .type(TaxonomyType.MODALITY)
-                .label("CBT")
-                .slug("cbt")
+                .type(TaxonomyType.DIET_TYPE)
+                .label("Vegan")
+                .slug("vegan")
                 .active(true)
                 .build();
         when(repository.findByTenantIdAndTypeAndActiveTrueAndDeletedAtIsNullOrderBySortOrderAscLabelAsc(
-                        TENANT_ID, TaxonomyType.MODALITY))
+                        TENANT_ID, TaxonomyType.DIET_TYPE))
                 .thenReturn(List.of(term));
 
-        List<TaxonomyTermResponseDTO> result = service.listActive(TaxonomyType.MODALITY);
+        List<TaxonomyTermResponseDTO> result = service.listActive(TaxonomyType.DIET_TYPE);
 
         assertEquals(1, result.size());
-        assertEquals("CBT", result.get(0).getLabel());
+        assertEquals("Vegan", result.get(0).getLabel());
     }
 }

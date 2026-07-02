@@ -12,11 +12,11 @@ import type { ContentBlock } from "@/types/page";
 import type { MenuItemDto } from "@/types/menu";
 import type { TaxonomyTerm, TaxonomyTermRequest, TaxonomyType } from "@/types/taxonomy";
 import type {
-  TherapistDetail,
-  TherapistFilters,
-  TherapistRequest,
-  TherapistSummary,
-} from "@/types/therapist";
+  ProductDetail,
+  ProductFilters,
+  ProductRequest,
+  ProductSummary,
+} from "@/types/product";
 import type { IntakeRequest, MatchResponse } from "@/types/match";
 import type {
   IntakeMatchRequest,
@@ -226,7 +226,6 @@ export interface CreateStaffRequest {
   email?: string;
   sortOrder?: number;
   published?: boolean;
-  isTherapist?: boolean;
   socialLinks?: Record<string, string>;
 }
 
@@ -238,7 +237,6 @@ export interface UpdateStaffRequest {
   email?: string;
   sortOrder?: number;
   published?: boolean;
-  isTherapist?: boolean;
   socialLinks?: Record<string, string>;
 }
 
@@ -256,10 +254,6 @@ export async function updateStaffMember(id: string, data: UpdateStaffRequest): P
 
 export async function deleteStaffMember(id: string): Promise<void> {
   await apiFetch<void>(`/admin/staff/${id}`, { method: "DELETE" });
-}
-
-export async function backfillStaffTherapists(): Promise<number> {
-  return apiFetch<number>("/admin/staff/backfill-therapists", { method: "POST" });
 }
 
 export async function fetchFaq(pageId: string): Promise<FaqItem[]> {
@@ -627,50 +621,50 @@ export async function deleteTaxonomyTerm(id: string): Promise<void> {
   await apiFetch<void>(`/admin/taxonomies/${id}`, { method: "DELETE" });
 }
 
-export async function fetchTherapists(
-  filters: TherapistFilters = {},
+export async function fetchProducts(
+  filters: ProductFilters = {},
   page = 0,
-  size = 20,
-): Promise<PagedResponse<TherapistSummary>> {
+  size = 24,
+): Promise<PagedResponse<ProductSummary>> {
   const params: Record<string, string | number | boolean | undefined> = { page, size };
-  if (filters.focusArea) params.focusArea = filters.focusArea;
-  if (filters.modality) params.modality = filters.modality;
-  if (filters.demographic) params.demographic = filters.demographic;
-  if (filters.delivery) params.delivery = filters.delivery;
-  if (filters.availability) params.availability = filters.availability;
+  if (filters.allergyType) params.allergyType = filters.allergyType;
+  if (filters.dietType) params.dietType = filters.dietType;
+  if (filters.category) params.category = filters.category;
+  if (filters.storeSection) params.storeSection = filters.storeSection;
+  if (filters.stockStatus) params.stockStatus = filters.stockStatus;
   if (filters.q) params.q = filters.q;
-  return apiFetch<PagedResponse<TherapistSummary>>("/therapists", { params });
+  return apiFetch<PagedResponse<ProductSummary>>("/products", { params });
 }
 
-export async function fetchTherapist(slug: string): Promise<TherapistDetail> {
-  return apiFetch<TherapistDetail>(`/therapists/${slug}`);
+export async function fetchProduct(slug: string): Promise<ProductDetail> {
+  return apiFetch<ProductDetail>(`/products/${slug}`);
 }
 
-export async function fetchAdminTherapists(): Promise<TherapistDetail[]> {
-  return apiFetch<TherapistDetail[]>("/admin/therapists");
+export async function fetchAdminProducts(): Promise<ProductDetail[]> {
+  return apiFetch<ProductDetail[]>("/admin/products");
 }
 
-export async function fetchAdminTherapist(id: string): Promise<TherapistDetail> {
-  return apiFetch<TherapistDetail>(`/admin/therapists/${id}`);
+export async function fetchAdminProduct(id: string): Promise<ProductDetail> {
+  return apiFetch<ProductDetail>(`/admin/products/${id}`);
 }
 
-export async function createTherapist(data: TherapistRequest): Promise<TherapistDetail> {
-  return apiFetch<TherapistDetail>("/admin/therapists", { method: "POST", body: JSON.stringify(data) });
+export async function createProduct(data: ProductRequest): Promise<ProductDetail> {
+  return apiFetch<ProductDetail>("/admin/products", { method: "POST", body: JSON.stringify(data) });
 }
 
-export async function updateTherapist(id: string, data: TherapistRequest): Promise<TherapistDetail> {
-  return apiFetch<TherapistDetail>(`/admin/therapists/${id}`, {
+export async function updateProduct(id: string, data: ProductRequest): Promise<ProductDetail> {
+  return apiFetch<ProductDetail>(`/admin/products/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
 }
 
-export async function deleteTherapist(id: string): Promise<void> {
-  await apiFetch<void>(`/admin/therapists/${id}`, { method: "DELETE" });
+export async function deleteProduct(id: string): Promise<void> {
+  await apiFetch<void>(`/admin/products/${id}`, { method: "DELETE" });
 }
 
-export async function publishTherapist(id: string, published: boolean): Promise<TherapistDetail> {
-  return apiFetch<TherapistDetail>(`/admin/therapists/${id}/publish`, {
+export async function publishProduct(id: string, published: boolean): Promise<ProductDetail> {
+  return apiFetch<ProductDetail>(`/admin/products/${id}/publish`, {
     method: "PATCH",
     params: { published },
   });

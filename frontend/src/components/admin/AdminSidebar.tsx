@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   ClipboardList,
   FileText,
-  Heart,
   HelpCircle,
   Home,
   Image,
@@ -14,6 +13,7 @@ import {
   MessageSquare,
   Menu,
   Settings,
+  ShoppingBag,
   Tag,
   Users,
 } from "lucide-react";
@@ -25,7 +25,7 @@ const links = [
   { href: "/admin/blog", label: "Blog", icon: MessageSquare },
   { href: "/admin/categories", label: "Categories", icon: Tag },
   { href: "/admin/taxonomies", label: "Taxonomies", icon: Layers },
-  { href: "/admin/therapists", label: "Therapists", icon: Heart },
+  { href: "/admin/products", label: "Products", icon: ShoppingBag },
   { href: "/admin/intake", label: "Intake", icon: ClipboardList },
   { href: "/admin/menus", label: "Menus", icon: Menu },
   { href: "/admin/staff", label: "Staff", icon: Users },

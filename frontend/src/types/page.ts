@@ -58,7 +58,6 @@ export interface StaffMember {
   sortOrder: number;
   published?: boolean;
   isTherapist?: boolean;
-  therapistId?: string | null;
   socialLinks: Record<string, string>;
 }
 
