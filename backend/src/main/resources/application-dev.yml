@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:brochure_cms}
+    username: ${POSTGRES_USER:cms_user}
+    password: ${POSTGRES_PASSWORD:devpassword}
+  jpa:
+    show-sql: false
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:3000}
+  media:
+    root: ${APP_MEDIA_ROOT:./media}
+  jwt:
+    secret: ${JWT_SECRET:dev-jwt-secret-change-in-production-0123456789abcdef0123456789abcdef}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  tenant:
+    header-enabled: true
+
+logging:
+  level:
+    com.brochure.cms: DEBUG
+    org.springframework.security: INFO

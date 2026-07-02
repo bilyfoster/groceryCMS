@@ -1,0 +1,25 @@
+diff --git a/node_modules/prosemirror-model/dist/index.cjs b/node_modules/prosemirror-model/dist/index.cjs
+index 5c883f0..fcb04d7 100644
+--- a/node_modules/prosemirror-model/dist/index.cjs
++++ b/node_modules/prosemirror-model/dist/index.cjs
+@@ -2840,6 +2840,7 @@ function _renderSpec(doc, structure, xmlNS, blockArraysIn) {
+     dom: structure
+   };
+   if (structure.dom && structure.dom.nodeType == 3) return structure;
++  if (structure.dom && typeof structure.dom.nodeType === "number") return { dom: structure.dom, contentDOM: structure.contentDOM };
+   var tagName = structure[0],
+     suspicious;
+   if (typeof tagName != "string") throw new RangeError("Invalid array passed to renderSpec");
+diff --git a/node_modules/prosemirror-model/dist/index.js b/node_modules/prosemirror-model/dist/index.js
+index aaa8e3e..cffd942 100644
+--- a/node_modules/prosemirror-model/dist/index.js
++++ b/node_modules/prosemirror-model/dist/index.js
+@@ -3407,6 +3407,8 @@ function renderSpec(doc, structure, xmlNS, blockArraysIn) {
+         return { dom: structure };
+     if (structure.dom && structure.dom.nodeType == 3)
+         return structure;
++    if (structure.dom && typeof structure.dom.nodeType === "number")
++        return { dom: structure.dom, contentDOM: structure.contentDOM };
+     let tagName = structure[0], suspicious;
+     if (typeof tagName != "string")
+         throw new RangeError("Invalid array passed to renderSpec");

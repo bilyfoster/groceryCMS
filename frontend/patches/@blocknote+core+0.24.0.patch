@@ -1,0 +1,176 @@
+diff --git a/node_modules/@blocknote/core/dist/blocknote.js b/node_modules/@blocknote/core/dist/blocknote.js
+index 28f22f4..6766aa1 100644
+--- a/node_modules/@blocknote/core/dist/blocknote.js
++++ b/node_modules/@blocknote/core/dist/blocknote.js
+@@ -12086,21 +12086,22 @@ const fa = L.create({
+   },
+   renderHTML({ HTMLAttributes: e }) {
+     var n;
+-    const t = document.createElement("div");
+-    t.className = "bn-block-outer", t.setAttribute("data-node-type", "blockOuter");
+-    for (const [r, a] of Object.entries(e))
+-      r !== "class" && t.setAttribute(r, a);
+     const o = {
+       ...((n = this.options.domAttributes) == null ? void 0 : n.block) || {},
+       ...e
+-    }, i = document.createElement("div");
+-    i.className = G("bn-block", o.class), i.setAttribute("data-node-type", this.name);
+-    for (const [r, a] of Object.entries(o))
+-      r !== "class" && i.setAttribute(r, a);
+-    return t.appendChild(i), {
+-      dom: t,
+-      contentDOM: i
++    }, r = {
++      class: "bn-block-outer",
++      "data-node-type": "blockOuter"
++    };
++    for (const [s, l] of Object.entries(e))
++      s !== "class" && l != null && (r[s] = String(l));
++    const a = {
++      class: G("bn-block", o.class),
++      "data-node-type": this.name
+     };
++    for (const [s, l] of Object.entries(o))
++      s !== "class" && l != null && (a[s] = String(l));
++    return ["div", r, ["div", a, 0]];
+   }
+ }), ya = Z.create({
+   name: "blockGroup",
+@@ -12119,17 +12120,13 @@ const fa = L.create({
+     const t = {
+       ...((i = this.options.domAttributes) == null ? void 0 : i.blockGroup) || {},
+       ...e
+-    }, o = document.createElement("div");
+-    o.className = G(
+-      "bn-block-group",
+-      t.class
+-    ), o.setAttribute("data-node-type", "blockGroup");
+-    for (const [n, r] of Object.entries(t))
+-      n !== "class" && o.setAttribute(n, r);
+-    return {
+-      dom: o,
+-      contentDOM: o
++    }, o = {
++      class: G("bn-block-group", t.class),
++      "data-node-type": "blockGroup"
+     };
++    for (const [n, r] of Object.entries(t))
++      n !== "class" && r != null && (o[n] = String(r));
++    return ["div", o, 0];
+   }
+ }), va = Z.create({
+   name: "doc",
+@@ -12367,7 +12364,8 @@ const we = class we extends Bo {
+         // @ts-ignore
+         dispatchTransaction: this.dispatchTransaction.bind(this),
+         state: this.state,
+-        markViews: i
++        markViews: i,
++        nodeViews: this.extensionManager.nodeViews
+       }
+     );
+     const n = this.state.reconfigure({
+diff --git a/node_modules/@blocknote/core/src/editor/BlockNoteTipTapEditor.ts b/node_modules/@blocknote/core/src/editor/BlockNoteTipTapEditor.ts
+index 458a22a..a3fa811 100644
+--- a/node_modules/@blocknote/core/src/editor/BlockNoteTipTapEditor.ts
++++ b/node_modules/@blocknote/core/src/editor/BlockNoteTipTapEditor.ts
+@@ -169,6 +169,7 @@ export class BlockNoteTipTapEditor extends TiptapEditor {
+         dispatchTransaction: this.dispatchTransaction.bind(this),
+         state: this.state,
+         markViews,
++        nodeViews: this.extensionManager.nodeViews,
+       }
+     );
+ 
+diff --git a/node_modules/@blocknote/core/src/pm-nodes/BlockContainer.ts b/node_modules/@blocknote/core/src/pm-nodes/BlockContainer.ts
+index ecd7f80..9530d22 100644
+--- a/node_modules/@blocknote/core/src/pm-nodes/BlockContainer.ts
++++ b/node_modules/@blocknote/core/src/pm-nodes/BlockContainer.ts
+@@ -55,33 +55,31 @@ export const BlockContainer = Node.create<{
+   },
+ 
+   renderHTML({ HTMLAttributes }) {
+-    const blockOuter = document.createElement("div");
+-    blockOuter.className = "bn-block-outer";
+-    blockOuter.setAttribute("data-node-type", "blockOuter");
++    const blockHTMLAttributes = {
++      ...(this.options.domAttributes?.block || {}),
++      ...HTMLAttributes,
++    };
++
++    const outerAttrs: Record<string, string> = {
++      class: "bn-block-outer",
++      "data-node-type": "blockOuter",
++    };
+     for (const [attribute, value] of Object.entries(HTMLAttributes)) {
+-      if (attribute !== "class") {
+-        blockOuter.setAttribute(attribute, value);
++      if (attribute !== "class" && value != null) {
++        outerAttrs[attribute] = String(value);
+       }
+     }
+ 
+-    const blockHTMLAttributes = {
+-      ...(this.options.domAttributes?.block || {}),
+-      ...HTMLAttributes,
++    const innerAttrs: Record<string, string> = {
++      class: mergeCSSClasses("bn-block", blockHTMLAttributes.class),
++      "data-node-type": this.name,
+     };
+-    const block = document.createElement("div");
+-    block.className = mergeCSSClasses("bn-block", blockHTMLAttributes.class);
+-    block.setAttribute("data-node-type", this.name);
+     for (const [attribute, value] of Object.entries(blockHTMLAttributes)) {
+-      if (attribute !== "class") {
+-        block.setAttribute(attribute, value);
++      if (attribute !== "class" && value != null) {
++        innerAttrs[attribute] = String(value);
+       }
+     }
+ 
+-    blockOuter.appendChild(block);
+-
+-    return {
+-      dom: blockOuter,
+-      contentDOM: block,
+-    };
++    return ["div", outerAttrs, ["div", innerAttrs, 0]];
+   },
+ });
+diff --git a/node_modules/@blocknote/core/src/pm-nodes/BlockGroup.ts b/node_modules/@blocknote/core/src/pm-nodes/BlockGroup.ts
+index 820b7ee..c42b6b7 100644
+--- a/node_modules/@blocknote/core/src/pm-nodes/BlockGroup.ts
++++ b/node_modules/@blocknote/core/src/pm-nodes/BlockGroup.ts
+@@ -34,21 +34,20 @@ export const BlockGroup = Node.create<{
+       ...(this.options.domAttributes?.blockGroup || {}),
+       ...HTMLAttributes,
+     };
+-    const blockGroup = document.createElement("div");
+-    blockGroup.className = mergeCSSClasses(
+-      "bn-block-group",
+-      blockGroupHTMLAttributes.class
+-    );
+-    blockGroup.setAttribute("data-node-type", "blockGroup");
++
++    const attrs: Record<string, string> = {
++      class: mergeCSSClasses(
++        "bn-block-group",
++        blockGroupHTMLAttributes.class
++      ),
++      "data-node-type": "blockGroup",
++    };
+     for (const [attribute, value] of Object.entries(blockGroupHTMLAttributes)) {
+-      if (attribute !== "class") {
+-        blockGroup.setAttribute(attribute, value);
++      if (attribute !== "class" && value != null) {
++        attrs[attribute] = String(value);
+       }
+     }
+ 
+-    return {
+-      dom: blockGroup,
+-      contentDOM: blockGroup,
+-    };
++    return ["div", attrs, 0];
+   },
+ });

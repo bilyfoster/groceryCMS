@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+  mail:
+    host: localhost
+    port: 3025
+  freemarker:
+    template-loader-path: classpath:/templates/email/
+    suffix: .html
+
+app:
+  base-url: http://localhost:3000
+  media:
+    root: ${java.io.tmpdir}/brochure-cms-test-media
+  mail:
+    from: test@localhost
+  jwt:
+    secret: test-jwt-secret-for-unit-and-integration-tests-0123456789abcdef
+    expiry-days: 7
+  cors:
+    allowed-origins: http://localhost:3000
+  tenant:
+    header-enabled: true

@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:brochure_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  liquibase:
+    enabled: false
+  mail:
+    host: localhost
+    port: 3025
+  freemarker:
+    template-loader-path: classpath:/templates/email/
+    suffix: .html
+
+app:
+  base-url: http://localhost:3000
+  media:
+    root: ${java.io.tmpdir}/brochure-cms-test-media
+  mail:
+    from: test@localhost
+  jwt:
+    secret: test-jwt-secret-for-unit-and-integration-tests-0123456789abcdef
+    expiry-days: 7
+  cors:
+    allowed-origins: http://localhost:3000
+  tenant:
+    header-enabled: true

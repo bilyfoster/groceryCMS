@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Contact submission</title></head>
+<body style="font-family: Arial, sans-serif;">
+  <h2>New contact form submission</h2>
+  <p><strong>Name:</strong> ${submission.name}</p>
+  <p><strong>Email:</strong> ${submission.email}</p>
+  <#if submission.phone??><p><strong>Phone:</strong> ${submission.phone}</p></#if>
+  <#if submission.subject??><p><strong>Subject:</strong> ${submission.subject}</p></#if>
+  <p><strong>Message:</strong></p>
+  <p>${submission.message}</p>
+</body>
+</html>

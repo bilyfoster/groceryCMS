@@ -1,0 +1,33 @@
+# OS
+.DS_Store
+
+# Secrets / env
+.env
+.env.local
+*.local
+
+# Java / Gradle
+backend/.gradle/
+backend/build/
+backend/bin/
+*.class
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+node_modules/
+
+# Media / uploads (runtime data)
+backend/media/
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Claude local memory (machine-specific)
+.claude/
