@@ -66,16 +66,16 @@ function defaultContent(blockType: string): Record<string, unknown> {
       return { text: "Learn more", url: "/", style: "primary" };
     case "pricing":
       return {
-        heading: "Services & Pricing",
+        heading: "Products & Categories",
         intro: "",
         note: "",
         tiers: [
-          { name: "Individual Therapy", price: "Intake: $235\nSession: $180", featured: false },
+          { name: "Bakery", price: "Gluten-free breads, muffins, and treats", featured: false },
         ],
         insurance: [],
         paymentNote: "",
-        ctaText: "Book Now",
-        ctaUrl: "",
+        ctaText: "Shop now",
+        ctaUrl: "/products",
       };
     default:
       return {};
