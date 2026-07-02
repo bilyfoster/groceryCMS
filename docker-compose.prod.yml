@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - brazen-internal
+      - pickles-internal
     restart: unless-stopped
 
   backend:
@@ -24,15 +24,15 @@ services:
     depends_on:
       - db
     networks:
-      - brazen-internal
+      - pickles-internal
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.brazen-api.rule=Host(`brazen.1lpro.com`) && (PathPrefix(`/api`) || PathPrefix(`/media`))"
-      - "traefik.http.routers.brazen-api.entrypoints=websecure"
-      - "traefik.http.routers.brazen-api.tls=true"
-      - "traefik.http.routers.brazen-api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.brazen-api.loadbalancer.server.port=8080"
+      - "traefik.http.routers.pickles-api.rule=Host(`pickles.1lpro.com`) && (PathPrefix(`/api`) || PathPrefix(`/media`))"
+      - "traefik.http.routers.pickles-api.entrypoints=websecure"
+      - "traefik.http.routers.pickles-api.tls=true"
+      - "traefik.http.routers.pickles-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.pickles-api.loadbalancer.server.port=8080"
     restart: unless-stopped
 
   frontend:
@@ -50,12 +50,12 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.brazen-app.rule=Host(`brazen.1lpro.com`)"
-      - "traefik.http.routers.brazen-app.entrypoints=websecure"
-      - "traefik.http.routers.brazen-app.tls=true"
-      - "traefik.http.routers.brazen-app.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.brazen-app.priority=5"
-      - "traefik.http.services.brazen-app.loadbalancer.server.port=3000"
+      - "traefik.http.routers.pickles-app.rule=Host(`pickles.1lpro.com`)"
+      - "traefik.http.routers.pickles-app.entrypoints=websecure"
+      - "traefik.http.routers.pickles-app.tls=true"
+      - "traefik.http.routers.pickles-app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.pickles-app.priority=5"
+      - "traefik.http.services.pickles-app.loadbalancer.server.port=3000"
     restart: unless-stopped
 
 volumes:
@@ -63,7 +63,7 @@ volumes:
   media_data:
 
 networks:
-  brazen-internal:
+  pickles-internal:
     driver: bridge
   traefik:
     external: true

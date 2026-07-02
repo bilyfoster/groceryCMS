@@ -4,8 +4,8 @@ set -euo pipefail
 VERSION=$(cat VERSION)
 export APP_VERSION="$VERSION"
 
-SERVER="jenkins@158.220.127.80"
-SERVER_DIR="/home/jenkins/docker/brazen-cms"
+SERVER="jenkins@rue"
+SERVER_DIR="/home/jenkins/docker/pickles-cms"
 SSH_PASS="..bb8Copilot"
 
 echo "Pushing version $VERSION to origin..."
@@ -29,4 +29,4 @@ echo "Building and deploying containers..."
 sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SERVER" \
   "export APP_VERSION=$VERSION && cd $SERVER_DIR && docker compose -f docker-compose.prod.yml up -d --build"
 
-echo "Deployed $VERSION"
+echo "Deployed $VERSION to pickles.1lpro.com"
