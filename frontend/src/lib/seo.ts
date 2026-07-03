@@ -6,6 +6,7 @@ import type { TenantSettingsDto } from "@/types/tenant";
 function siteUrl(tenant: TenantSettingsDto | null): string {
   const domain =
     (tenant?.settings?.domain as string | undefined) ||
+    process.env.APP_BASE_URL?.replace(/^https?:\/\//, "") ||
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, "") ||
     "localhost:3000";
   const protocol = domain.includes("localhost") ? "http" : "https";

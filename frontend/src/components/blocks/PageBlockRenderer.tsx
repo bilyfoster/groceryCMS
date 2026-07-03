@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
-import { TextBlock } from "@/components/blocks/TextBlock";
 import type { ContentBlock } from "@/types/page";
 import { cn } from "@/lib/utils";
 import { BLOCK_ICONS } from "@/lib/blockIcons";
@@ -34,24 +33,39 @@ function TextBlockGroup({
     >
       <div
         className={cn(
-          "grid grid-cols-1 gap-6",
+          "grid grid-cols-1 gap-5 md:gap-6",
           gridCols[count],
         )}
       >
         {blocks.map((block) => {
           const iconName = block.content?.icon as string | undefined;
           const Icon = iconName ? BLOCK_ICONS[iconName] : undefined;
+          const heading = block.content.heading ? String(block.content.heading) : null;
+          const body = block.content.body ? String(block.content.body) : "";
           return (
             <div
               key={block.id}
-              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+              className="flex min-h-[300px] flex-col rounded-[var(--border-radius)] border border-slate-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[var(--color-primary)]/30 hover:shadow-md md:p-7"
             >
               {Icon && (
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-                  <Icon className="h-6 w-6" />
+                <div className="mb-6 inline-flex h-10 w-10 items-center justify-center rounded-[var(--border-radius)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                  <Icon className="h-5 w-5" />
                 </div>
               )}
-              <TextBlock content={block.content} className="h-full" />
+              {heading && (
+                <h2
+                  className="mb-4 text-2xl font-semibold leading-tight text-slate-950 md:text-3xl"
+                  style={{ fontFamily: "var(--font-heading)" }}
+                >
+                  {heading}
+                </h2>
+              )}
+              {body && (
+                <div
+                  className="prose prose-slate mt-auto max-w-none text-[15px] leading-7 prose-p:my-0"
+                  dangerouslySetInnerHTML={{ __html: body }}
+                />
+              )}
             </div>
           );
         })}

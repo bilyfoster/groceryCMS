@@ -38,6 +38,9 @@ echo "$NEW" > "$VERSION_FILE"
 sed -i.bak "s/\"version\": \"[^\"]*\"/\"version\": \"$NEW\"/" frontend/package.json
 rm -f frontend/package.json.bak
 
+# Sync to frontend package-lock.json root/package metadata
+node -e "const fs=require('fs'); const p='frontend/package-lock.json'; const data=JSON.parse(fs.readFileSync(p,'utf8')); data.version='$NEW'; if (data.packages && data.packages['']) data.packages[''].version='$NEW'; fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');"
+
 # Sync to backend build.gradle
 sed -i.bak "s/version = '[^']*'/version = '$NEW'/" backend/build.gradle
 rm -f backend/build.gradle.bak
