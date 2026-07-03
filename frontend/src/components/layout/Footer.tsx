@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { Heart, Lock } from "lucide-react";
 import { Nav } from "@/components/layout/Nav";
 import type { TenantSettingsDto } from "@/types/tenant";
 import type { MenuItemDto } from "@/types/menu";
@@ -23,6 +23,16 @@ export function Footer({ tenant, menuItems = [] }: FooterProps) {
           {version && (
             <span className="text-xs text-slate-400">v{version}</span>
           )}
+          <Link
+            href="https://1lpro.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[var(--color-primary)]"
+          >
+            <span>Made with</span>
+            <Heart className="h-4 w-4 fill-current" aria-hidden />
+            <span>by 1lpro.com</span>
+          </Link>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
