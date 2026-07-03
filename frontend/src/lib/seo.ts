@@ -13,6 +13,12 @@ function siteUrl(tenant: TenantSettingsDto | null): string {
   return `${protocol}://${domain}`;
 }
 
+function absoluteUrl(base: string, url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (/^https?:\/\//.test(url)) return url;
+  return `${base}${url.startsWith("/") ? url : `/${url}`}`;
+}
+
 export function generatePageMetadata(
   page: PageDetail,
   tenant: TenantSettingsDto | null,
@@ -20,6 +26,7 @@ export function generatePageMetadata(
   const base = siteUrl(tenant);
   const title = page.metaTitle ?? page.title;
   const description = page.metaDescription ?? undefined;
+  const image = absoluteUrl(base, page.ogImageUrl);
 
   return {
     title,
@@ -27,10 +34,10 @@ export function generatePageMetadata(
     openGraph: {
       title,
       description,
-      images: page.ogImageUrl ? [{ url: page.ogImageUrl }] : [],
+      images: image ? [{ url: image }] : [],
       type: "website",
     },
-    twitter: { card: "summary_large_image" },
+    twitter: { card: "summary_large_image", images: image ? [image] : [] },
     alternates: {
       canonical: `${base}/${page.slug === "home" ? "" : page.slug}`.replace(
         /\/$/,
@@ -47,6 +54,7 @@ export function generatePostMetadata(
   const base = siteUrl(tenant);
   const title = post.metaTitle ?? post.title;
   const description = post.metaDescription ?? post.excerpt ?? undefined;
+  const image = absoluteUrl(base, post.featuredImage);
 
   return {
     title,
@@ -54,11 +62,11 @@ export function generatePostMetadata(
     openGraph: {
       title,
       description,
-      images: post.featuredImage ? [{ url: post.featuredImage }] : [],
+      images: image ? [{ url: image }] : [],
       type: "article",
       publishedTime: post.publishedAt ?? undefined,
     },
-    twitter: { card: "summary_large_image" },
+    twitter: { card: "summary_large_image", images: image ? [image] : [] },
     alternates: {
       canonical: `${base}/blog/${post.slug}`,
     },
