@@ -13,6 +13,18 @@ interface HeaderProps {
   menuItems?: MenuItemDto[];
 }
 
+function BrandMark() {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary)] text-sm font-black leading-none text-white shadow-sm"
+      style={{ fontFamily: "var(--font-heading)" }}
+    >
+      PB
+    </span>
+  );
+}
+
 export function Header({ tenant, pages, menuItems = [] }: HeaderProps) {
   const logoUrl = tenant.settings.logoUrl as string | undefined;
   const siteName = (tenant.settings.siteName as string | undefined) || tenant.name;
@@ -26,10 +38,11 @@ export function Header({ tenant, pages, menuItems = [] }: HeaderProps) {
           style={{ fontFamily: "var(--font-heading)" }}
         >
           {logoUrl ? (
-            <Image src={logoUrl} alt={siteName} width={120} height={40} className="h-10 w-auto" />
+            <Image src={logoUrl} alt="" width={36} height={36} className="h-9 w-auto rounded-lg" />
           ) : (
-            siteName
+            <BrandMark />
           )}
+          <span>{siteName}</span>
         </Link>
         <div className="hidden items-center gap-4 md:flex">
           <Nav pages={pages} menuItems={menuItems} />
