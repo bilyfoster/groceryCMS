@@ -219,6 +219,18 @@ function BlockFields({
             value={String(c.backgroundImage ?? "")}
             onChange={(v) => set("backgroundImage", v)}
           />
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field
+              label="Mobile focal point"
+              value={String(c.objectPosition ?? "")}
+              onChange={(v) => set("objectPosition", v)}
+            />
+            <Field
+              label="Desktop focal point"
+              value={String(c.desktopObjectPosition ?? "")}
+              onChange={(v) => set("desktopObjectPosition", v)}
+            />
+          </div>
         </div>
       );
     case "text":

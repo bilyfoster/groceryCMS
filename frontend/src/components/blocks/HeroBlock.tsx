@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 export function HeroBlock({ content }: { content: Record<string, unknown> }) {
   const eyebrow = content.eyebrow ? String(content.eyebrow) : null;
@@ -14,6 +15,13 @@ export function HeroBlock({ content }: { content: Record<string, unknown> }) {
   const objectPosition = content.objectPosition
     ? String(content.objectPosition)
     : "center";
+  const desktopObjectPosition = content.desktopObjectPosition
+    ? String(content.desktopObjectPosition)
+    : objectPosition;
+  const imageStyle = {
+    "--hero-object-position": objectPosition,
+    "--hero-object-position-desktop": desktopObjectPosition,
+  } as CSSProperties;
 
   return (
     <section className="relative isolate overflow-hidden bg-slate-950 text-white">
@@ -22,8 +30,8 @@ export function HeroBlock({ content }: { content: Record<string, unknown> }) {
           src={backgroundImage}
           alt=""
           fill
-          className="object-cover"
-          style={{ objectPosition }}
+          className="object-cover object-[var(--hero-object-position)] md:object-[var(--hero-object-position-desktop)]"
+          style={imageStyle}
           priority
           sizes="100vw"
         />
